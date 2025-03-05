@@ -149,7 +149,7 @@ export default function Home() {
             <h2 className='text-2xl font-bold mb-4 text-black'>Contact</h2>
             <p className='text-gray-600'>
               I&apos;m always open to new opportunities and collaborations. Feel
-              free to reach out! &lt;3
+              free to reach out!
             </p>
             {/* Add your contact information or a contact form here */}
           </div>
