@@ -1,160 +1,71 @@
 'use client';
-import { useState } from 'react';
+import { createContext, useState } from 'react';
+
+import Header from './components/Header';
+
+import type { ActiveTab } from '@/types';
+import About from './components/About';
+import Skills from './components/Skills';
+import Experiences from './components/Experiences';
+import Education from './components/Education';
+import Contact from './components/Contact';
+
+const themes = ['light', 'dark'] as const;
+type Theme = (typeof themes)[number];
+export const ThemeContext = createContext<{
+  theme: Theme;
+  toggleTheme: Function;
+}>({ theme: 'light', toggleTheme: Function });
+
+const langs = ['en', 'vi'] as const;
+type Lang = (typeof langs)[number];
+export const LanguageContext = createContext<{
+  language: Lang;
+  toggleLanguage: Function;
+}>({ language: 'en', toggleLanguage: Function });
 
 export default function Home() {
-  const [activeSection, setActiveSection] = useState('about');
+  const [activeSection, setActiveSection] = useState<ActiveTab>('about');
 
-  const skills = {
-    backend: ['Java', 'Spring Boot', 'JDBC', 'JPA', 'Express', 'NestJS'],
-    frontend: ['React', 'React Native', 'Next.js', 'TypeScript', 'JavaScript'],
-    interested: ['PHP', 'Go', 'New Technologies'],
-    other: ['Git', 'Problem Solving', 'Research', 'English Communication'],
+  const [theme, setTheme] = useState<Theme>('light');
+  const [language, setLanguage] = useState<Lang>('en');
+
+  const toggleTheme = (choice?: Theme) => {
+    if (choice) {
+      setTheme(choice);
+      return;
+    }
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
-  const experience = [
-    {
-      role: 'Full Stack Developer',
-      duration: '2+ years',
-      description:
-        'Specialized in administrator system domain, working with Java and JavaScript technologies.',
-    },
-  ];
-
-  const education = {
-    university: 'HCMC University of Technology and Education',
-    degree: 'Software Engineer',
-    duration: '2019 - 2022',
-    achievement: 'Credit Degree',
+  const toggleLanguage = (choice?: Lang) => {
+    if (choice) {
+      setLanguage(choice);
+      return;
+    }
+    setLanguage((prev) => (prev === 'en' ? 'vi' : 'en'));
   };
 
   return (
-    <main className='min-h-screen bg-gray-100'>
-      {/* Navigation */}
-      <nav className='bg-white shadow-md'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='flex justify-between h-16'>
-            <div className='flex items-center'>
-              <h1 className='text-xl font-bold text-black'>Phi Vo</h1>
-            </div>
-            <div className='flex space-x-8'>
-              {['about', 'skills', 'experience', 'education', 'contact'].map(
-                (section) => (
-                  <button
-                    key={section}
-                    onClick={() => setActiveSection(section)}
-                    className={`hover:cursor-pointer hover:text-blue-600 ${
-                      activeSection === section
-                        ? 'text-blue-600 border-b-2 border-blue-600'
-                        : 'text-gray-500'
-                    }`}
-                  >
-                    {section.charAt(0).toUpperCase() + section.slice(1)}
-                  </button>
-                ),
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+    <LanguageContext.Provider value={{ language, toggleLanguage }}>
+      <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <main className='min-h-screen bg-gray-100 p-4'>
+          {/* Navigation */}
+          <Header
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+          />
 
-      {/* Main Content */}
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
-        {/* About Section */}
-        <section
-          className={`${activeSection === 'about' ? 'block' : 'hidden'}`}
-        >
-          <div className='bg-white rounded-lg shadow-md p-6'>
-            <h2 className='text-2xl font-bold mb-4 text-black'>About Me</h2>
-            <p className='text-gray-600'>
-              I am a passionate Full Stack Developer with over 2 years of
-              experience in building web applications. My expertise spans both
-              Java and JavaScript ecosystems, with a strong foundation in Spring
-              Boot and React-based technologies.
-            </p>
+          {/* Main Content */}
+          <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
+            <About show={activeSection === 'about'} />
+            <Skills show={activeSection === 'skills'} />
+            <Experiences show={activeSection === 'experience'} />
+            <Education show={activeSection === 'education'} />
+            <Contact show={activeSection === 'contact'} />
           </div>
-        </section>
-
-        {/* Skills Section */}
-        <section
-          className={`${activeSection === 'skills' ? 'block' : 'hidden'}`}
-        >
-          <div className='bg-white rounded-lg shadow-md p-6'>
-            <h2 className='text-2xl font-bold mb-4 text-black'>
-              Technical Skills
-            </h2>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              {Object.entries(skills).map(([category, items]) => (
-                <div key={category}>
-                  <h3 className='text-lg font-semibold mb-2 capitalize text-[#aaa]'>
-                    {category}
-                  </h3>
-                  <div className='flex flex-wrap gap-2'>
-                    {items.map((skill) => (
-                      <span
-                        key={skill}
-                        className='bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm'
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Experience Section */}
-        <section
-          className={`${activeSection === 'experience' ? 'block' : 'hidden'}`}
-        >
-          <div className='bg-white rounded-lg shadow-md p-6'>
-            <h2 className='text-2xl font-bold mb-4 text-black'>
-              Work Experience
-            </h2>
-            {experience.map((exp, index) => (
-              <div key={index} className='mb-6'>
-                <h3 className='text-lg font-semibold text-[#aaa]'>
-                  {exp.role}
-                </h3>
-                <p className='text-gray-500'>{exp.duration}</p>
-                <p className='text-gray-600 mt-2'>{exp.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Education Section */}
-        <section
-          className={`${activeSection === 'education' ? 'block' : 'hidden'}`}
-        >
-          <div className='bg-white rounded-lg shadow-md p-6'>
-            <h2 className='text-2xl font-bold mb-4 text-black'>Education</h2>
-            <div>
-              <h3 className='text-lg font-semibold text-[#aaa]'>
-                {education.university}
-              </h3>
-              <p className='text-gray-500'>{education.degree}</p>
-              <p className='text-gray-600'>{education.duration}</p>
-              <p className='text-gray-600'>{education.achievement}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Section */}
-        <section
-          className={`${activeSection === 'contact' ? 'block' : 'hidden'}`}
-        >
-          <div className='bg-white rounded-lg shadow-md p-6'>
-            <h2 className='text-2xl font-bold mb-4 text-black'>Contact</h2>
-            <p className='text-gray-600'>
-              I&apos;m always open to new opportunities and collaborations. Feel
-              free to reach out!
-            </p>
-            {/* Add your contact information or a contact form here */}
-          </div>
-        </section>
-      </div>
-    </main>
+        </main>
+      </ThemeContext.Provider>
+    </LanguageContext.Provider>
   );
 }
